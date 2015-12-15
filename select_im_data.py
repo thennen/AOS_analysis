@@ -45,8 +45,14 @@ class SelectArea:
 
     def on_release(self, event):
         self.ax.figure.canvas.draw()
+        x0, y0 = self.press
         x1, y1 = event.xdata, event.ydata
-
+        xl, xr = int(min(x0, x1)), int(max(x0, x1))
+        yt, yb = int(min(y0, y1)), int(max(y0, y1))
+        # Add the new pixels to self.pixels
+        # Switching definition of x and y because indexing is stupid
+        rect_pixels = [(y, x) for x in range(xl, xr + 1) for y in range(yt, yb + 1)]
+        self.pixels.extend([p for p in rect_pixels if p not in self.pixels])
         self.press = None
 
     def disconnect(self):
