@@ -14,7 +14,7 @@ class SelectArea:
     def __init__(self, ax):
         self.ax = ax
         self.rects = []
-        self.pixels = [] 
+        self.pixels = []
         self.done = False
         self.press = None
         self.title = ax.get_title()
@@ -31,6 +31,8 @@ class SelectArea:
             rect = Rectangle(self.press, 1, 1, alpha=.1, color='blue')
             self.ax.add_patch(rect)
             self.rects.append(rect)
+            self.ax.figure.canvas.draw()
+            plt.pause(.1)
         elif event.button == 3:
             # Right click
             self.disconnect()
@@ -39,9 +41,11 @@ class SelectArea:
         if self.press is None: return
         x0, y0 = self.press
         x1, y1 = event.xdata, event.ydata
-        self.rects[-1].set_width(x1 - x0)
-        self.rects[-1].set_height(y1 - y0)
+        if not any([p is None for p in (x0, x1, y0, y1)]):
+            self.rects[-1].set_width(x1 - x0)
+            self.rects[-1].set_height(y1 - y0)
         self.ax.figure.canvas.draw()
+        plt.pause(.1)
 
     def on_release(self, event):
         self.ax.figure.canvas.draw()
@@ -54,6 +58,7 @@ class SelectArea:
         rect_pixels = [(y, x) for x in range(xl, xr + 1) for y in range(yt, yb + 1)]
         self.pixels.extend([p for p in rect_pixels if p not in self.pixels])
         self.press = None
+        plt.pause(.1)
 
     def disconnect(self):
         'disconnect all the stored connection ids'
